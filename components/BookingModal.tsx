@@ -16,17 +16,19 @@ interface BookingModalProps {
     cuisine: string;
   };
   onConfirm: (booking: {
+    restaurantName: string;
     date: Date;
     time: string;
     guests: number;
     specialRequests: string;
-    selectedDishes: string[];
+    selectedDishes: Dish[];
+    primaryPreOrderedDish: Dish | null;
     totalPrice: number;
     transactionSignature?: string;
   }) => void;
 }
 
-interface Dish {
+export interface Dish {
   name: string;
   price: number;
   description: string;
@@ -85,15 +87,14 @@ export default function BookingModal({ isOpen, onClose, restaurant, onConfirm }:
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [guests, setGuests] = useState(2);
   const [specialRequests, setSpecialRequests] = useState("");
-  const [selectedDishes, setSelectedDishes] = useState<string[]>([]);
+  const [selectedDishes, setSelectedDishes] = useState<Dish[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [transactionSignature, setTransactionSignature] = useState<string | null>(null);
 
   // Calculate total price
   const priceBreakdown = useMemo(() => {
-    const subtotal = selectedDishes.reduce((total, dishName) => {
-      const dish = SAMPLE_DISHES.find(d => d.name === dishName);
+    const subtotal = selectedDishes.reduce((total, dish) => {
       return total + (dish?.price || 0);
     }, 0);
 
@@ -166,7 +167,7 @@ export default function BookingModal({ isOpen, onClose, restaurant, onConfirm }:
           new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Transaction timeout')), 30000)
           )
-        ]);
+        ]) as { value: { err: any } };
 
         if (confirmation.value.err) {
           throw new Error('Transaction failed to confirm');
@@ -177,19 +178,21 @@ export default function BookingModal({ isOpen, onClose, restaurant, onConfirm }:
 
         // Proceed with booking
         onConfirm({
+          restaurantName: restaurant.name,
           date: selectedDate,
           time: selectedTime,
           guests,
           specialRequests,
           selectedDishes,
+          primaryPreOrderedDish: selectedDishes.length > 0 ? selectedDishes[0] : null,
           totalPrice: priceBreakdown.total,
           transactionSignature: signature,
         });
 
-        // Redirect to rating page after 3 seconds
-        setTimeout(() => {
-          router.push(`/rating/${restaurant.id}?tx=${signature}`);
-        }, 3000);
+        // Redirect to rating page after 3 seconds - COMMENTING THIS OUT
+        // setTimeout(() => {
+        //   router.push(`/rating/${restaurant.id}?tx=${signature}`);
+        // }, 3000);
 
       } catch (confirmError) {
         // If we have a signature but confirmation timed out, show a special message
@@ -201,19 +204,21 @@ export default function BookingModal({ isOpen, onClose, restaurant, onConfirm }:
           
           // Still proceed with the booking since the transaction might succeed
           onConfirm({
+            restaurantName: restaurant.name,
             date: selectedDate,
             time: selectedTime,
             guests,
             specialRequests,
             selectedDishes,
+            primaryPreOrderedDish: selectedDishes.length > 0 ? selectedDishes[0] : null,
             totalPrice: priceBreakdown.total,
             transactionSignature: signature,
           });
 
-          // Redirect to rating page after 3 seconds
-          setTimeout(() => {
-            router.push(`/rating/${restaurant.id}?tx=${signature}`);
-          }, 3000);
+          // Redirect to rating page after 3 seconds - COMMENTING THIS OUT
+          // setTimeout(() => {
+          //   router.push(`/rating/${restaurant.id}?tx=${signature}`);
+          // }, 3000);
         } else {
           throw confirmError;
         }
@@ -232,11 +237,11 @@ export default function BookingModal({ isOpen, onClose, restaurant, onConfirm }:
     await handlePayment();
   };
 
-  const toggleDish = (dish: string) => {
+  const toggleDish = (dishToToggle: Dish) => {
     setSelectedDishes(prev =>
-      prev.includes(dish)
-        ? prev.filter(d => d !== dish)
-        : [...prev, dish]
+      prev.find(d => d.name === dishToToggle.name)
+        ? prev.filter(d => d.name !== dishToToggle.name)
+        : [...prev, dishToToggle]
     );
   };
 
@@ -254,190 +259,187 @@ export default function BookingModal({ isOpen, onClose, restaurant, onConfirm }:
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Date Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Date
-              </label>
-              <input
-                type="date"
-                min={format(new Date(), 'yyyy-MM-dd')}
-                value={format(selectedDate, 'yyyy-MM-dd')}
-                onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
-
-            {/* Time Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Time
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {TIME_SLOTS.map((time) => (
-                  <button
-                    key={time}
-                    type="button"
-                    onClick={() => setSelectedTime(time)}
-                    className={`p-2 rounded-lg border ${
-                      selectedTime === time
-                        ? 'bg-blue-500 text-white'
-                        : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    {time}
-                  </button>
-                ))}
+          {transactionSignature ? (
+            <SuccessMessageBox
+              restaurant={{ name: restaurant.name }}
+              bookingDetails={{
+                date: selectedDate,
+                time: selectedTime,
+                guests: guests,
+                selectedDishes: selectedDishes.map(d => d.name),
+                totalPrice: priceBreakdown.total,
+              }}
+              transactionSignature={transactionSignature}
+              onClose={() => {
+                setTransactionSignature(null);
+                onClose();
+              }}
+            />
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Date Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Date
+                </label>
+                <input
+                  type="date"
+                  min={format(new Date(), 'yyyy-MM-dd')}
+                  value={format(selectedDate, 'yyyy-MM-dd')}
+                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                  className="w-full p-2 border rounded-lg"
+                  required
+                />
               </div>
-            </div>
 
-            {/* Number of Guests */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Number of Guests
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="10"
-                value={guests}
-                onChange={(e) => setGuests(Number(e.target.value))}
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
+              {/* Time Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Time
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {TIME_SLOTS.map((time) => (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => setSelectedTime(time)}
+                      className={`p-2 rounded-lg border ${
+                        selectedTime === time
+                          ? 'bg-blue-500 text-white'
+                          : 'hover:bg-gray-50'
+                      }`}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-            {/* Pre-order Dishes */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pre-order Dishes (Optional)
-              </label>
-              <div className="grid grid-cols-1 gap-2">
-                {SAMPLE_DISHES.map((dish) => (
-                  <label
-                    key={dish.name}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
-                  >
-                    <div className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedDishes.includes(dish.name)}
-                        onChange={() => toggleDish(dish.name)}
-                        className="mt-1 rounded"
-                      />
-                      <div>
-                        <div className="font-medium">{dish.name}</div>
-                        <div className="text-sm text-gray-500">{dish.description}</div>
+              {/* Number of Guests */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Number of Guests
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={guests}
+                  onChange={(e) => setGuests(Number(e.target.value))}
+                  className="w-full p-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              {/* Pre-order Dishes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Pre-order Dishes (Optional)
+                </label>
+                <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                  {SAMPLE_DISHES.map((dish, index) => (
+                    <div
+                      key={index}
+                      className={`p-3 border rounded-md cursor-pointer hover:border-blue-500 transition-all ${
+                        selectedDishes.find(d => d.name === dish.name) ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                      }`}
+                      onClick={() => toggleDish(dish)}
+                    >
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">{dish.name}</h4>
+                        <p className="text-sm font-semibold text-blue-600">${dish.price.toFixed(2)}</p>
                       </div>
+                      <p className="text-xs text-gray-600 mt-1">{dish.description}</p>
+                      {selectedDishes.find(d => d.name === dish.name) && (
+                        <CheckCircle2 className="w-5 h-5 text-blue-500 absolute top-2 right-2" />
+                      )}
                     </div>
-                    <div className="text-blue-600 font-semibold">
-                      ${dish.price.toFixed(2)}
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Price Breakdown */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-3">Price Breakdown</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>${priceBreakdown.subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Service Charge ({SERVICE_CHARGE_PERCENTAGE}%)</span>
-                  <span>${priceBreakdown.serviceCharge.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Booking Fee</span>
-                  <span>${priceBreakdown.bookingFee.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between font-bold text-lg border-t pt-2">
-                  <span>Total</span>
-                  <span>${priceBreakdown.total.toFixed(2)}</span>
-                </div>
-                <div className="text-sm text-gray-500 mt-2 flex items-center gap-2">
-                  <Image
-                    src="/solana-logo.svg"
-                    alt="Solana"
-                    width={16}
-                    height={16}
-                    className="inline-block"
-                  />
-                  <span>≈ {(priceBreakdown.total / 100).toFixed(4)} SOL</span>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            {/* Special Requests */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Special Requests (Optional)
-              </label>
-              <textarea
-                value={specialRequests}
-                onChange={(e) => setSpecialRequests(e.target.value)}
-                className="w-full p-2 border rounded-lg"
-                rows={3}
-                placeholder="Any special requests or dietary requirements?"
-              />
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-                {error}
+              {/* Price Breakdown */}
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold mb-3">Price Breakdown</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>${priceBreakdown.subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Service Charge ({SERVICE_CHARGE_PERCENTAGE}%)</span>
+                    <span>${priceBreakdown.serviceCharge.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Booking Fee</span>
+                    <span>${priceBreakdown.bookingFee.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg border-t pt-2">
+                    <span>Total</span>
+                    <span>${priceBreakdown.total.toFixed(2)}</span>
+                  </div>
+                  <div className="text-sm text-gray-500 mt-2 flex items-center gap-2">
+                    <Image
+                      src="/solana-logo.svg"
+                      alt="Solana"
+                      width={16}
+                      height={16}
+                      className="inline-block"
+                    />
+                    <span>≈ {(priceBreakdown.total / 100).toFixed(4)} SOL</span>
+                  </div>
+                </div>
               </div>
-            )}
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isProcessing}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white py-3 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Processing Solana Payment...
-                </>
-              ) : (
-                <>
-                  <Image
-                    src="/solana-logo.svg"
-                    alt="Solana"
-                    width={20}
-                    height={20}
-                    className="inline-block"
-                  />
-                  Pay with Solana ({(priceBreakdown.total / 100).toFixed(4)} SOL)
-                </>
+              {/* Special Requests */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Special Requests (Optional)
+                </label>
+                <textarea
+                  value={specialRequests}
+                  onChange={(e) => setSpecialRequests(e.target.value)}
+                  className="w-full p-2 border rounded-lg"
+                  rows={3}
+                  placeholder="Any special requests or dietary requirements?"
+                />
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                  {error}
+                </div>
               )}
-            </button>
-          </form>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isProcessing}
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white py-3 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Processing Solana Payment...
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      src="/solana-logo.svg"
+                      alt="Solana"
+                      width={20}
+                      height={20}
+                      className="inline-block"
+                    />
+                    Pay with Solana ({(priceBreakdown.total / 100).toFixed(4)} SOL)
+                  </>
+                )}
+              </button>
+            </form>
+          )}
         </div>
       </div>
-
-      {transactionSignature && (
-        <SuccessMessageBox
-          restaurant={restaurant}
-          bookingDetails={{
-            date: selectedDate,
-            time: selectedTime,
-            guests,
-            totalPrice: priceBreakdown.total,
-          }}
-          transactionSignature={transactionSignature}
-          onClose={() => {
-            setTransactionSignature(null);
-            onClose();
-          }}
-        />
-      )}
     </>
   );
 } 

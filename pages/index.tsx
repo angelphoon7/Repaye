@@ -1,40 +1,62 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Star, MapPin, Clock, Phone, Calendar, Wallet } from 'lucide-react';
+import { useRouter } from 'next/router'; // Import useRouter
+// import { Star, MapPin, Clock, Phone, Calendar, Wallet } from 'lucide-react'; // Lucide icons not used in this version
 import { useWallet } from '@solana/wallet-adapter-react';
 import dynamic from 'next/dynamic';
-import BookingModal from '../components/BookingModal';
-import { format } from 'date-fns';
+// import BookingModal from '../components/BookingModal'; // BookingModal not used for now
+// import { format } from 'date-fns'; // format not used for now
+import { Box, Container, Heading, Stack, Text, Button, Image, SimpleGrid, ButtonGroup, useDisclosure } from "@chakra-ui/react"; // Added Text, Button, Image, SimpleGrid, ButtonGroup, useDisclosure
+import { RestaurantStats } from "../components/RestaurantStats";
+import { useSolana } from '../contexts/SolanaContext'; // For program instance and refreshUserData
+import { recordVisitOnChain } from '../utils/solana'; // The new function
+import { PublicKey } from '@solana/web3.js'; // For creating PublicKey instances
+import { toaster } from '../components/ui/toaster'; // Import the custom toaster
+import BookingModal, { Dish } from '../components/BookingModal'; // Import BookingModal and Dish type
 
+// Import Card components using the new pattern
+import { Card } from "@chakra-ui/react";
+
+// const PROGRAM_ID = "6JQHXDZMwJ6JQHXDZMwJ6JQHXDZMwJ6JQHXDZMwJ"; // Removed this unused constant
 // Dynamically import the wallet button component
-const WalletMultiButtonDynamic = dynamic(
-  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+const WalletMultiButton = dynamic(
+  async () =>
+    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
 
-// Custom styles for the wallet button
-const walletButtonStyles = {
-  backgroundColor: 'transparent',
-  border: 'none',
-  padding: '0.5rem',
-  borderRadius: '50%',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: '#4B5563',
-  hover: {
-    backgroundColor: '#F3F4F6',
-    transform: 'scale(1.05)',
-  },
-};
+// Custom styles for the wallet button (can be kept or removed if not specifically styled here)
+// const walletButtonStyles = { ... };
 
-// Sample restaurant data
-const restaurants = [
+// Define a type for our restaurant structure more explicitly
+interface DishData {
+  name: string;
+  publicKey: string;
+  price: number;
+}
+interface RestaurantData {
+  id: number;
+  name: string;
+  publicKey: string;
+  dishes: DishData[];
+  description: string;
+  rating: number;
+  reviews: number;
+  cuisine: string;
+  address: string;
+  hours: string;
+  phone: string;
+  image: string;
+  individualReviews: any[]; // Keep general for now
+}
+
+// Sample restaurant data (already updated with publicKey and dishes)
+const restaurants: RestaurantData[] = [
   {
     id: 1,
     name: "Sushi Master",
+    publicKey: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    dishes: [{ name: "Tuna Roll", publicKey: "MemoSq4gqABAXKb96qnH8TysNcVtrpQDMJEhHXGUxb", price: 8 }],
     description: "Authentic Japanese cuisine with fresh ingredients and masterful preparation.",
     rating: 4.8,
     reviews: 234,
@@ -43,26 +65,13 @@ const restaurants = [
     hours: "11:00 AM - 10:00 PM",
     phone: "(555) 123-4567",
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&auto=format&fit=crop&q=60",
-    individualReviews: [
-      {
-        id: 1,
-        rating: 5,
-        comment: "Amazing sushi! The quality is outstanding and the service is impeccable.",
-        walletAddress: "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1M",
-        date: "2024-03-15"
-      },
-      {
-        id: 2,
-        rating: 4,
-        comment: "Great atmosphere and delicious food. Will definitely come back!",
-        walletAddress: "8x02N8jZ0nNjd9XgH7dhTDKjzSYzeRkMi7VZCxXn7z2N",
-        date: "2024-03-14"
-      }
-    ]
+    individualReviews: []
   },
   {
     id: 2,
     name: "Pasta Paradise",
+    publicKey: "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+    dishes: [{ name: "Carbonara", publicKey: "11111111111111111111111111111111", price: 15 }],
     description: "Traditional Italian pasta dishes made with homemade pasta and secret family recipes.",
     rating: 4.6,
     reviews: 189,
@@ -71,19 +80,13 @@ const restaurants = [
     hours: "12:00 PM - 11:00 PM",
     phone: "(555) 234-5678",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=60",
-    individualReviews: [
-      {
-        id: 1,
-        rating: 5,
-        comment: "Best pasta I've ever had! The carbonara is to die for.",
-        walletAddress: "9y13O9kA1oOkd0YhI8eiUELl0TZAfSlNj8WADyYo8A3O",
-        date: "2024-03-15"
-      }
-    ]
+    individualReviews: []
   },
   {
     id: 3,
     name: "Burger Haven",
+    publicKey: "ANCMYVnDzXJ28wYk5j27U3eg74S3V1C159GH5z8YtUfS",
+    dishes: [{ name: "Classic Burger", publicKey: "B2aB9LqdQZ4a7X5zepWvA3E9ZaaJGsF1J3FqX8yP9zHa", price: 12 }],
     description: "Gourmet burgers with locally sourced beef and artisanal buns.",
     rating: 4.5,
     reviews: 312,
@@ -92,19 +95,13 @@ const restaurants = [
     hours: "10:00 AM - 9:00 PM",
     phone: "(555) 345-6789",
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60",
-    individualReviews: [
-      {
-        id: 1,
-        rating: 4,
-        comment: "Great burgers and friendly staff. The craft beer selection is impressive.",
-        walletAddress: "0z24P0lB2pPlf1ZiJ9fjVFMm1UaBgTmOk9XBEzZp9B4P",
-        date: "2024-03-15"
-      }
-    ]
+    individualReviews: []
   },
   {
     id: 4,
     name: "Spice Garden",
+    publicKey: "C7g7Z2jS3d2yA1fX8nXsW5kHgP9vDqF3gV1LkJzPqYtR",
+    dishes: [{ name: "Chicken Tikka Masala", publicKey: "D9fW2kPqrS3a8Z6xJ4nBcW1gHtY5vLpQ2eF7jX3mY9sA", price: 14 }],
     description: "Authentic Indian cuisine with a modern twist and extensive vegetarian options.",
     rating: 4.7,
     reviews: 156,
@@ -117,281 +114,211 @@ const restaurants = [
   }
 ];
 
-export default function RatingApp() {
-  const [mounted, setMounted] = useState(false);
-  const [showPhantomLink, setShowPhantomLink] = useState(false);
-  const { connected } = useWallet();
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [selectedRestaurant, setSelectedRestaurant] = useState<typeof restaurants[0] | null>(null);
-  const [openReviews, setOpenReviews] = useState<{ [id: number]: boolean }>({});
-  
-  // Handle client-side mounting
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+export default function Home() {
+  const router = useRouter(); // Get router instance
+  const { publicKey } = useWallet();
+  const { program, refreshUserData } = useSolana();
+  const { open, onOpen, onClose } = useDisclosure(); // Changed isOpen to open
+  const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantData | null>(null);
+  const [isProcessingOnChain, setIsProcessingOnChain] = useState(false); // Renamed from isBooking to avoid conflict
 
-  // Check if Phantom wallet is installed
-  useEffect(() => {
-    if (!mounted) return;
-
-    const checkPhantomWallet = () => {
-      const isPhantomInstalled = window?.solana?.isPhantom;
-      setShowPhantomLink(!isPhantomInstalled);
-    };
-    
-    checkPhantomWallet();
-    window.addEventListener('load', checkPhantomWallet);
-    
-    return () => {
-      window.removeEventListener('load', checkPhantomWallet);
-    };
-  }, [mounted]);
-
-  const handleBooking = (restaurant: typeof restaurants[0]) => {
-    if (!connected) {
-      alert('Please connect your wallet to make a booking');
-      return;
-    }
-    setSelectedRestaurant(restaurant);
-    setIsBookingModalOpen(true);
-  };
-
-  const handleConfirmBooking = (bookingDetails: {
+  // This function will be passed to the BookingModal to handle the on-chain part
+  const handleBookingConfirmed = async (booking: {
+    restaurantName: string;
     date: Date;
     time: string;
     guests: number;
-    specialRequests: string;
-    selectedDishes: string[];
-    totalPrice: number;
-    transactionSignature?: string;
+    specialRequests: string; 
+    selectedDishes: Dish[]; // Use imported Dish type
+    primaryPreOrderedDish: Dish | null; // Use imported Dish type
+    totalPrice: number; 
+    transactionSignature?: string; 
   }) => {
-    // Here you would typically send the booking details to your backend
-    console.log('Booking confirmed:', {
-      restaurant: selectedRestaurant?.name,
-      ...bookingDetails,
-    });
-    
-    const message = [
-      `Booking confirmed at ${selectedRestaurant?.name}`,
-      `Date: ${format(bookingDetails.date, 'MMMM d, yyyy')}`,
-      `Time: ${bookingDetails.time}`,
-      `Guests: ${bookingDetails.guests}`,
-      `Selected Dishes: ${bookingDetails.selectedDishes.join(', ')}`,
-      `Total Price: $${bookingDetails.totalPrice.toFixed(2)}`,
-      bookingDetails.transactionSignature ? 
-        `Transaction: https://explorer.solana.com/tx/${bookingDetails.transactionSignature}` : 
-        'No transaction signature'
-    ].join('\n');
+    if (!publicKey || !program ) { 
+      toaster.create({
+        title: "Error",
+        description: "Wallet or program not available.",
+        status: "error", duration: 5000, isClosable: true,
+      });
+      return;
+    }
 
-    alert(message);
-    setIsBookingModalOpen(false);
-    setSelectedRestaurant(null);
+    setIsProcessingOnChain(true);
+    try {
+      // Call recordVisitOnChain with restaurantName and the primaryPreOrderedDish object
+      const txSig = await recordVisitOnChain(
+        program, 
+        booking.restaurantName, 
+        booking.primaryPreOrderedDish // This is { name: string, price: number } | null
+      );
+      
+      toaster.create({
+        title: "Booking Recorded On-Chain!",
+        description: `Transaction: ${txSig}. Restaurant: ${booking.restaurantName}, Date: ${booking.date.toLocaleDateString()}, Time: ${booking.time}, Guests: ${booking.guests}`,
+        status: "success", duration: 7000, isClosable: true,
+      });
+      
+      await refreshUserData(); // Refresh stats
+      onClose(); // Close the booking modal
+
+      // Navigate to a rating/review page immediately after successful on-chain recording
+      // The transaction signature (txSig) from recordVisitOnChain can be used as an ID
+      // The payment transaction signature (booking.transactionSignature) is also available if needed
+      toaster.create({
+        title: "Redirecting to Review Page",
+        description: "Please wait while we take you to the review page.",
+        status: "info",
+        duration: 3000, // Give a moment for the user to see previous success toast
+        isClosable: true,
+      });
+      
+      // Using a timeout to allow the user to read the previous toasts before redirecting
+      setTimeout(() => {
+        router.push({
+          pathname: `/review/${txSig}`, // Example: /review/[onChainRecordTxSig]
+          query: {
+            restaurantName: booking.restaurantName,
+            dishName: booking.primaryPreOrderedDish ? booking.primaryPreOrderedDish.name : undefined,
+            date: booking.date.toISOString(),
+            time: booking.time,
+            guests: booking.guests.toString(),
+            paymentSignature: booking.transactionSignature, // SOL payment signature
+          },
+        });
+      }, 2000); // Delay of 2 seconds before redirect
+
+    } catch (error: any) {
+      console.error("Detailed On-chain recording failed object:", error); // Log the whole object
+
+      let userFriendlyMessage = "An unexpected error occurred. Please check console for details.";
+      let technicalDetails = "";
+
+      if (typeof error === 'string') {
+        technicalDetails = error;
+      } else if (error instanceof Error) {
+        technicalDetails = error.message; // Main message from Error object
+        if (error.stack) {
+          console.error("Error Stack Trace:", error.stack); // Log stack for more context
+        }
+      } else {
+        try {
+          technicalDetails = JSON.stringify(error); // Fallback for other error types
+        } catch (e) {
+          technicalDetails = "Error object could not be stringified.";
+        }
+      }
+
+      if (error && error.logs) {
+        console.error("Transaction Logs from error object:", error.logs);
+        const logsString = JSON.stringify(error.logs);
+        technicalDetails += ` Logs: ${logsString.substring(0, 200)}${logsString.length > 200 ? '...' : ''}`;
+      }
+      
+      // Try to get a more specific user-facing message for known error patterns
+      if (error && typeof error.message === 'string') {
+        if (error.message.includes("AccountNotSigner")) {
+          userFriendlyMessage = "AccountNotSigner: A required account did not sign. Check program/client setup.";
+        } else if (error.message.includes("custom program error")) {
+          const errorCodeMatch = error.message.match(/custom program error: (0x[0-9a-fA-F]+)/);
+          if (errorCodeMatch && errorCodeMatch[1]) {
+            userFriendlyMessage = `Program Error: ${errorCodeMatch[1]}. Check console for logs.`;
+          } else {
+            userFriendlyMessage = "A custom program error occurred. Check console for logs.";
+          }
+        } else if (error.message.includes("Simulation failed")) {
+            userFriendlyMessage = "Transaction simulation failed. Check console for details and logs.";
+        } else if (technicalDetails && technicalDetails.trim() !== '') {
+           // Use the extracted technical details if they are more specific than generic message
+           userFriendlyMessage = technicalDetails.substring(0, 250) + (technicalDetails.length > 250 ? '...' : ''); 
+        }
+      } else if (technicalDetails && technicalDetails.trim() !== '') {
+        // If no error.message but we have some technical details from stringifying the error
+        userFriendlyMessage = technicalDetails.substring(0, 250) + (technicalDetails.length > 250 ? '...' : '');
+      }
+
+      toaster.create({
+        title: "On-Chain Recording Failed",
+        description: userFriendlyMessage,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      // Log the full technicalDetails for developer, as toast might truncate it.
+      console.error("Full technical details for failed on-chain recording:", technicalDetails);
+
+    } finally {
+      setIsProcessingOnChain(false);
+    }
+  };
+
+  const handleOpenBookingModal = (restaurant: RestaurantData) => {
+    setSelectedRestaurant(restaurant);
+    onOpen();
+  };
+
+  const handleReview = (restaurantName: string) => {
+    toaster.create({
+      title: "Review Feature",
+      description: `Review button for ${restaurantName} clicked. Functionality to be implemented.`,
+      status: "info", duration: 3000, isClosable: true,
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Head>
-        <title>Restaurant Reviews - Solana</title>
-        <style jsx global>{`
-          .wallet-adapter-button {
-            background-color: transparent !important;
-            border: none !important;
-            padding: 0.5rem !important;
-            border-radius: 50% !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            color: #4B5563 !important;
-            min-width: 40px !important;
-            height: 40px !important;
-            font-size: 0 !important;
-          }
+    <Container maxW="container.xl" py={8}>
+      <Stack direction="column">
+        <Box w="full" display="flex" justifyContent="flex-end" mb={4}>
+          <WalletMultiButton />
+        </Box>
 
-          .wallet-adapter-button:hover {
-            background-color: #F3F4F6 !important;
-            transform: scale(1.05) !important;
-          }
-
-          .wallet-adapter-button-trigger {
-            background-color: transparent !important;
-          }
-
-          .wallet-adapter-button:not([disabled]):hover {
-            background-color: #F3F4F6 !important;
-          }
-
-          .wallet-adapter-modal-wrapper {
-            background-color: white !important;
-            border-radius: 1rem !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-          }
-
-          .wallet-adapter-modal-button-close {
-            background-color: transparent !important;
-            border: none !important;
-            padding: 0.5rem !important;
-            border-radius: 50% !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            color: #4B5563 !important;
-          }
-
-          .wallet-adapter-modal-button-close:hover {
-            background-color: #F3F4F6 !important;
-          }
-        `}</style>
-      </Head>
-
-      {/* Wallet Connection Section - Fixed in top right */}
-      <div className="fixed top-4 right-4 z-50">
-        {mounted && (
-          <div className="flex flex-col items-end gap-2">
-            <div className="relative">
-              <WalletMultiButtonDynamic />
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <Wallet className="w-5 h-5 text-gray-600" />
-              </div>
-            </div>
-            {showPhantomLink && (
-              <div className="text-right">
-                <p className="text-sm text-gray-600 mb-2">Don't have Phantom wallet?</p>
-                <a
-                  href="https://phantom.app/download"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  Download Phantom Wallet
-                </a>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Featured Restaurants</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        <Heading mb={6}>Explore & Book Restaurants</Heading>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }}>
           {restaurants.map((restaurant) => (
-            <div key={restaurant.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-              <div className="relative h-48">
-                <img
-                  src={restaurant.image}
-                  alt={restaurant.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full flex items-center gap-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  <span className="font-semibold">{restaurant.rating}</span>
-                </div>
-              </div>
-              
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">{restaurant.name}</h2>
-                <p className="text-gray-600 mb-4">{restaurant.description}</p>
-                
-                <div className="space-y-2 text-sm text-gray-500">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{restaurant.address}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    <span>{restaurant.hours}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    <span>{restaurant.phone}</span>
-                  </div>
-                </div>
-                
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-sm text-gray-500">{restaurant.reviews} reviews</span>
-                  <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                    {restaurant.cuisine}
-                  </span>
-                </div>
-
-                <div className="mt-6 flex gap-2">
-                  <button
-                    onClick={() => handleBooking(restaurant)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
-                    style={{ minWidth: 0 }}
+            <Card.Root key={restaurant.id} overflow="hidden">
+              <Image src={restaurant.image} alt={restaurant.name} h="200px" w="full" objectFit="cover" />
+              <Card.Body>
+                <Heading size="md" mb={2}>{restaurant.name}</Heading>
+                <Text fontSize="sm" color="gray.600" mb={1}>{restaurant.cuisine} - {restaurant.address}</Text>
+                <Text fontSize="sm" mb={3}>{restaurant.description}</Text>
+                {restaurant.dishes.map(dish => (
+                  <Text key={dish.publicKey} fontSize="xs">Sample Dish: {dish.name} (${dish.price})</Text>
+                ))}
+              </Card.Body>
+              <Card.Footer>
+                <ButtonGroup>
+                  <Button 
+                    colorScheme="teal"
+                    onClick={() => handleOpenBookingModal(restaurant)} // Opens modal
+                    disabled={isProcessingOnChain || !publicKey} // Use the new state variable
                   >
-                    <Calendar className="w-4 h-4" />
-                    {connected ? 'Book' : 'Connect'}
-                  </button>
-                  <button
-                    onClick={() =>
-                      setOpenReviews((prev) => ({
-                        ...prev,
-                        [restaurant.id]: !prev[restaurant.id],
-                      }))
-                    }
-                    className="flex-1 flex items-center justify-center gap-2 bg-gray-200 text-gray-800 px-3 py-2 rounded-lg text-sm hover:bg-gray-300 transition-colors"
-                    style={{ minWidth: 0 }}
+                    {/* Text changes if any on-chain op is happening */}
+                    {isProcessingOnChain ? "Processing..." : "Book Table"} 
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => handleReview(restaurant.name)}
                   >
-                    Reviews
-                  </button>
-                </div>
-
-                {openReviews[restaurant.id] && restaurant.individualReviews && restaurant.individualReviews.length > 0 && (
-                  <div className="mt-4">
-                    <h3 className="text-lg font-semibold mb-2 text-gray-800">Reviews</h3>
-                    <div className="space-y-3">
-                      {restaurant.individualReviews.slice(-2).reverse().map((review) => (
-                        <div key={review.id} className="bg-gray-50 rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              <div className="flex">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    className={`w-4 h-4 ${
-                                      star <= review.rating
-                                        ? 'text-yellow-400 fill-yellow-400'
-                                        : 'text-gray-300'
-                                    }`}
-                                  />
-                                ))}
-                              </div>
-                              <span className="text-xs text-gray-500">{review.date}</span>
-                            </div>
-                            <span className="text-xs text-gray-400">
-                              {review.walletAddress.slice(0, 4)}...{review.walletAddress.slice(-4)}
-                            </span>
-                          </div>
-                          <p className="text-gray-700 text-sm">{review.comment}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+                    Write a Review
+                  </Button>
+                </ButtonGroup>
+              </Card.Footer>
+            </Card.Root>
           ))}
-        </div>
-      </div>
+        </SimpleGrid>
+      </Stack>
 
-      {/* Booking Modal */}
       {selectedRestaurant && (
-        <BookingModal
-          isOpen={isBookingModalOpen}
-          onClose={() => {
-            setIsBookingModalOpen(false);
-            setSelectedRestaurant(null);
+        <BookingModal 
+          isOpen={open} 
+          onClose={onClose} 
+          restaurant={{
+            id: selectedRestaurant.id,
+            name: selectedRestaurant.name,
+            cuisine: selectedRestaurant.cuisine,
           }}
-          restaurant={selectedRestaurant}
-          onConfirm={handleConfirmBooking}
+          onConfirm={handleBookingConfirmed} // Use the new handler
         />
       )}
-    </div>
+    </Container>
   );
 } 
