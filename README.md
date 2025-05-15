@@ -90,7 +90,7 @@ ________________________________________________________________________________
 
 1. On-Chain Transparency and Review Authenticity
 
-By storing reviews and ratings on-chain, Solana ensures tamper-proof review records—once submitted, reviews cannot be edited or deleted, transparent histories of user interactions and spending, enhanced trustworthiness in ratings due to immutable and verifiable data. This combats fake or manipulated reviews common in centralized systems.
+   By storing reviews and ratings on-chain, Solana ensures tamper-proof review records—once submitted, reviews cannot be edited or deleted, transparent histories of user interactions and           spending, enhanced trustworthiness in ratings due to immutable and verifiable data. This combats fake or manipulated reviews common in centralized systems.
 
 
 
