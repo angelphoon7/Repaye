@@ -1,7 +1,6 @@
 ![image](https://github.com/user-attachments/assets/d2f6db68-357a-4931-9791-ae50e4b405bb)
 
-**Repaye**
-_______________________________________________________________________________________________________
+**Repaye**✨
 
 An application to deliver verifiable reviews and ratings based on on-chain user behavior and transactions.
 ________________________________________________________________________________________________________
