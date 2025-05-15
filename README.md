@@ -92,6 +92,11 @@ ________________________________________________________________________________
 
    By storing reviews and ratings on-chain, Solana ensures tamper-proof review records—once submitted, reviews cannot be edited or deleted, transparent histories of user interactions and           spending, enhanced trustworthiness in ratings due to immutable and verifiable data. This combats fake or manipulated reviews common in centralized systems.
 
+2. Low Transaction Costs
+      
+   Each transaction on Solana typically costs fractions of a cent, which is critical for our platform where frequent micro-interactions occur, such as dish selection and modification, payments,
+   review submissions.This ensures the platform remains affordable and sustainable, even at scale.
+
 
 
 
