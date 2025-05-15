@@ -47,7 +47,7 @@ The data utilized in this algorithm are stored on-chain, ensuring transparency, 
     evaluation, thereby enhancing the reliability and accuracy of the ratings.
 
 _________________________________________________________________________________________________________
-**HOW OUR PROJECT WORKS****🍴**
+**HOW OUR PROJECT WORKS🍴**
 
 Users start by selecting the date and time to book a restaurant reservation. Then they will choose the dishes they wish to order and proceed with the payment. Only after completing the payment can users submit reviews and ratings. Additionally, users are allowed to submit a rating only once per day to ensure fairness and preventing multiple reviews within the same day.
 
