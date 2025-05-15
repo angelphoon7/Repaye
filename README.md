@@ -1,11 +1,11 @@
 ![image](https://github.com/user-attachments/assets/d2f6db68-357a-4931-9791-ae50e4b405bb)
 
-**Repaye**✨
+**Repaye****✨**
 
 An application to deliver verifiable reviews and ratings based on on-chain user behavior and transactions.
 ________________________________________________________________________________________________________
 
-**Problem Statement**❔
+**Problem Statement****❔**
 1. Reviews on major platforms such as Google Reviews and Instagram often lack authenticity.
  Users may be influenced by platform algorithms that prioritize certain content, leading to biased visibility. Moreover, some individuals or businesses go as far as purchasing followers or 
  engagement to manipulate public perception, thereby compromising the reliability and integrity of user-generated reviews.
@@ -16,7 +16,7 @@ ________________________________________________________________________________
  impression of quality and customer satisfaction.
 _______________________________________________________________________________________________________
 
-**Solution**💥
+**Solution****💥**
 
 ![image](https://github.com/user-attachments/assets/f68c6027-4588-4eae-ad4e-1a625bb4ff54)
 
@@ -48,7 +48,7 @@ The data utilized in this algorithm are stored on-chain, ensuring transparency, 
     evaluation, thereby enhancing the reliability and accuracy of the ratings.
 
 _________________________________________________________________________________________________________
-**HOW OUR PROJECT WORKS**🍴
+**HOW OUR PROJECT WORKS****🍴**
 
 Users start by selecting the date and time to book a restaurant reservation. Then they will choose the dishes they wish to order and proceed with the payment. Only after completing the payment can users submit reviews and ratings. Additionally, users are allowed to submit a rating only once per day to ensure fairness and preventing multiple reviews within the same day.
 
