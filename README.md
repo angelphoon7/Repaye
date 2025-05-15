@@ -59,7 +59,8 @@ ________________________________________________________________________________
 **ARCHITECTURE DIAGRAM**
 ![image](https://github.com/user-attachments/assets/844a58d5-6c61-4551-9107-16d6af73a9db)
 
-1. The User Interface developed using TypeScript, serves as the frontend layer of the application. 
+1. The User Interface developed using TypeScript (Frontend)
+
    It provides an intuitive and interactive experience for users to:
    Select the desired date and time for restaurant reservations, browse and select dishes from the menu,complete the payment process securely,submit reviews and ratings after the transaction is     confirmed and connect a wallet for authentication and payment purposes.
 
