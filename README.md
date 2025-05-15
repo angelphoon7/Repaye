@@ -25,20 +25,25 @@ We formulated an algorithm to enhance the accuracy of rating analysis and filter
 The data utilized in this algorithm are stored on-chain, ensuring transparency, immutability and secure access for all relevant computations and analyses.
 
 1. Food preference :
+
    Analyze food preferences of user by examining their transaction history, as their purchasing patterns provide valuable insights into their dietary habits and preferred cuisines.
 
 2. Visiting frequency :
+
    Users with higher visiting frequency are considered to provide more reliable and trustworthy reviews, as their feedback is based on consistent and repeated experiences.
    
 3. Service Performance :
+   
    Customers also take the quality of service into account. Even if the food is excellent, impolite or unprofessional behavior from the staff can negatively impact the overall dining experience, 
    potentially discouraging users from returning in the future.
    
 4. Spending amount :
+   
    Customers who spend larger amounts at a store typically have greater experience with its offerings, which enables them to provide more informed and credible ratings. Their higher level of 
    engagement suggests a deeper understanding of the product or service quality, making their feedback particularly valuable for accurately assessing the establishment.
    
-6.  Confidence level :
+5.  Confidence level :
+   
    The confidence level reflects the complexity and authenticity of the comments provided by users. For example, if a user repeatedly posts simplistic or redundant remarks such as "nice, nice, 
    nice," the algorithm, through AI analysis, will identify and filter out such repetitive content. This ensures that only meaningful and substantive feedback contributes to the overall 
    evaluation, thereby enhancing the reliability and accuracy of the ratings.
