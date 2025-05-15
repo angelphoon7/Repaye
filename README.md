@@ -110,12 +110,12 @@ ________________________________________________________________________________
 
 1. Sponsored Listings and Ads:
 
-The platform can incorporate a variety of advertising formats, including banner advertisements, video promotions and seasonal campaigns. Meanwhile, the platform will not only creates an additional source of revenue but also supports restaurants in strengthening their brand visibility and attracting a larger customer base.
+   The platform can incorporate a variety of advertising formats, including banner advertisements, video promotions and seasonal campaigns. Meanwhile, the platform will not only creates an         additional source of revenue but also supports restaurants in strengthening their brand visibility and attracting a larger customer base.
 
 
 2. Six-Month Complimentary Transaction Fee Period for Each Store:
 
-To encourage new stores to join and actively use the platform, a complimentary transaction fee waiver will be offered for the first six months following their registration. During this introductory period, stores can fully utilize the platform’s services without incurring any transaction fees, allowing them to experience the benefits and increase their customer engagement risk-free. After the completion of this six-month grace period, stores will be subject to a transaction fee applied to each completed sale. This fee will range from 5% to 10%, depending on factors such as the store’s sales volume.
+   To encourage new stores to join and actively use the platform, a complimentary transaction fee waiver will be offered for the first six months following their registration. During this          introductory period, stores can fully utilize the platform’s services without incurring any transaction fees, allowing them to experience the benefits and increase their customer engagement     risk-free. After the completion of this six-month grace period, stores will be subject to a transaction fee applied to each completed sale. This fee will range from 5% to 10%, depending on      factors such as the store’s sales volume.
 _____________________________________________________________________________________________________
 
 **To start the code**
