@@ -88,6 +88,9 @@ ________________________________________________________________________________
 ________________________________________________________________________________________________________
 **Why on SOLANA?**
 
+![image](https://github.com/user-attachments/assets/ea4d494e-7df7-4331-ba36-8d7d62881d22)
+
+
 1. On-Chain Transparency and Review Authenticity
 
    By storing reviews and ratings on-chain, Solana ensures tamper-proof review records—once submitted, reviews cannot be edited or deleted, transparent histories of user interactions and           spending, enhanced trustworthiness in ratings due to immutable and verifiable data. This combats fake or manipulated reviews common in centralized systems.
