@@ -12,15 +12,36 @@ ________________________________________________________________________________
  Users may be influenced by platform algorithms that prioritize certain content, leading to biased visibility. Moreover, some individuals or businesses go as far as purchasing followers or 
  engagement to manipulate public perception, thereby compromising the reliability and integrity of user-generated reviews.
 
-2.Shoppers deliberately remove negative reviews and retain only those that portray them in a favorable light. 
-This selective curation of feedback is often done to maintain a positive public image and influence potential customers. By showcasing only beneficial reviews, they create a misleading representation of their products or services. This manipulation not only distorts consumer trust and decision-making but also artificially inflates overall ratings, giving an inaccurate impression of quality and customer satisfaction.
+2. Shoppers deliberately remove negative reviews and retain only those that portray them in a favorable light. 
+ This selective curation of feedback is often done to maintain a positive public image and influence potential customers. By showcasing only beneficial reviews, they create a misleading 
+ representation of their products or services. This manipulation not only distorts consumer trust and decision-making but also artificially inflates overall ratings, giving an inaccurate 
+ impression of quality and customer satisfaction.
 _______________________________________________________________________________________________________
 
 **Solution**
 
 ![image](https://github.com/user-attachments/assets/f68c6027-4588-4eae-ad4e-1a625bb4ff54)
 
+We formulated an algorithm to enhance the accuracy of rating analysis and filtering with the objective of identifying the most reliable and high-performing establishments.
+The data utilized in this algorithm is stored on-chain, ensuring transparency, immutability and secure access for all relevant computations and analyses.
 
+1. Food preference
+   Analyze food preferences of user by examining their transaction history, as their purchasing patterns provide valuable insights into their dietary habits and preferred cuisines.
+
+2. Visiting frequency
+   
+   
+3. Service Performance
+4. Spending amount
+5. Confidence level
+
+
+
+
+
+
+_________________________________________________________________________________________________________
+**HOW OUR PROJECT WORKS**
 
 
 
