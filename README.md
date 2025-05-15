@@ -33,8 +33,7 @@ The data utilized in this algorithm are stored on-chain, ensuring transparency, 
    
 3. Service Performance :
    
-   Customers also take the quality of service into account. Even if the food is excellent, impolite or unprofessional behavior from the staff can negatively impact the overall dining experience, 
-   potentially discouraging users from returning in the future.
+   Customers also take the quality of service into account. Even if the food is excellent, impolite or unprofessional behavior from the staff can negatively impact the overall dining               experience,potentially discouraging users from returning in the future.
    
 4. Spending amount :
    
@@ -62,7 +61,8 @@ ________________________________________________________________________________
 1. The User Interface developed using TypeScript (Frontend)
 
    It provides an intuitive and interactive experience for users to:
-   Select the desired date and time for restaurant reservations, browse and select dishes from the menu,complete the payment process securely,submit reviews and ratings after the transaction is     confirmed and connect a wallet for authentication and payment purposes.
+
+   Select the desired date and time for restaurant reservations, browse and select dishes from the menu,complete the payment process securely,submit reviews and ratings after the transaction is    confirmed and connect a wallet for authentication and payment purposes.
 
 2. Blockchain Layer + APIs (Backend)
 
