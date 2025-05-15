@@ -23,17 +23,21 @@ ________________________________________________________________________________
 ![image](https://github.com/user-attachments/assets/f68c6027-4588-4eae-ad4e-1a625bb4ff54)
 
 We formulated an algorithm to enhance the accuracy of rating analysis and filtering with the objective of identifying the most reliable and high-performing establishments.
-The data utilized in this algorithm is stored on-chain, ensuring transparency, immutability and secure access for all relevant computations and analyses.
+The data utilized in this algorithm are stored on-chain, ensuring transparency, immutability and secure access for all relevant computations and analyses.
 
 1. Food preference
    Analyze food preferences of user by examining their transaction history, as their purchasing patterns provide valuable insights into their dietary habits and preferred cuisines.
 
 2. Visiting frequency
-   
+   Users with higher visiting frequency are considered to provide more reliable and trustworthy reviews, as their feedback is based on consistent and repeated experiences.
    
 3. Service Performance
+   Customers also take the quality of service into account. Even if the food is excellent, impolite or unprofessional behavior from the staff can negatively impact the overall dining experience, 
+   potentially discouraging users from returning in the future.
+   
 4. Spending amount
-5. Confidence level
+   
+6.  Confidence level
 
 
 
