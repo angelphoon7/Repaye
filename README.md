@@ -97,6 +97,10 @@ ________________________________________________________________________________
    Each transaction on Solana typically costs fractions of a cent, which is critical for our platform where frequent micro-interactions occur, such as dish selection and modification, payments,
    review submissions.This ensures the platform remains affordable and sustainable, even at scale.
 
+3. High Transaction Speed
+
+   Solana is capable of handling 65,000+ transactions per second (TPS), which is essential for a system where multiple users may book restaurant slots simultaneously,complete payments instantly    and submit reviews in real time.
+
 
 
 
