@@ -65,22 +65,20 @@ ________________________________________________________________________________
    Select the desired date and time for restaurant reservations, browse and select dishes from the menu,complete the payment process securely,submit reviews and ratings after the transaction is     confirmed and connect a wallet for authentication and payment purposes.
 
 2. Blockchain Layer + APIs (Backend)
-The backend is composed of several interconnected components that manage data storage, verification and logic execution:
+   The backend is composed of several interconnected components that manage data storage, verification and logic execution:
 
 
-a. Blockchain Layer
-This component stores user activities, payments, bookings and reviews on a decentralized blockchain. It ensures immutability, transparency, and security of data, fostering user trust by preventing tampering or manipulation.
+    a. Blockchain Layer
+   
+    This component stores user activities, payments, bookings and reviews on a decentralized blockchain. It ensures immutability, transparency, and security of data, fostering user trust by         preventing tampering or manipulation.
 
-b. Helius API
+   b. Helius API
 
-The Helius API facilitates real-time communication with the blockchain.It enables the application to fetch on-chain data such as transaction status, payment verification and wallet interactions.
+    The Helius API facilitates real-time communication with the blockchain.It enables the application to fetch on-chain data such as transaction status, payment verification and wallet              interactions. Helius simplifies complex blockchain queries, making backend operations more efficient and scalable.
 
-Helius simplifies complex blockchain queries, making backend operations more efficient and scalable.
+   c. OpenAI Integration
 
-c. OpenAI Integration
-
-OpenAI’s language models are used to process and analyze user-generated reviews. The AI model evaluates review sentiment, detects redundant or repetitive content and measures comment complexity.
-This ensures that only genuine and insightful reviews influence the restaurant rating, while generic or spam-like feedback is filtered appropriately.
+    OpenAI’s language models are used to process and analyze user-generated reviews. The AI model evaluates review sentiment, detects redundant or repetitive content and measures comment            complexity. This ensures that only genuine and insightful reviews influence the restaurant rating, while generic or spam-like feedback is filtered appropriately.
 
 
 
