@@ -39,14 +39,14 @@ The data utilized in this algorithm are stored on-chain, ensuring transparency, 
    
 4. Spending amount :
    
-   Customers who spend larger amounts at a store typically have greater experience with its offerings, which enables them to provide more informed and credible ratings. Their higher level of 
-   engagement suggests a deeper understanding of the product or service quality, making their feedback particularly valuable for accurately assessing the establishment.
+    Customers who spend larger amounts at a store typically have greater experience with its offerings, which enables them to provide more informed and credible ratings. Their higher level of 
+    engagement suggests a deeper understanding of the product or service quality, making their feedback particularly valuable for accurately assessing the establishment.
    
 5.  Confidence level :
    
-   The confidence level reflects the complexity and authenticity of the comments provided by users. For example, if a user repeatedly posts simplistic or redundant remarks such as "nice, nice, 
-   nice," the algorithm, through AI analysis, will identify and filter out such repetitive content. This ensures that only meaningful and substantive feedback contributes to the overall 
-   evaluation, thereby enhancing the reliability and accuracy of the ratings.
+    The confidence level reflects the complexity and authenticity of the comments provided by users. For example, if a user repeatedly posts simplistic or redundant remarks such as "nice, nice, 
+    nice," the algorithm, through AI analysis, will identify and filter out such repetitive content. This ensures that only meaningful and substantive feedback contributes to the overall 
+    evaluation, thereby enhancing the reliability and accuracy of the ratings.
 
 _________________________________________________________________________________________________________
 **HOW OUR PROJECT WORKS**
