@@ -65,6 +65,7 @@ ________________________________________________________________________________
    Select the desired date and time for restaurant reservations, browse and select dishes from the menu,complete the payment process securely,submit reviews and ratings after the transaction is     confirmed and connect a wallet for authentication and payment purposes.
 
 2. Blockchain Layer + APIs (Backend)
+
    The backend is composed of several interconnected components that manage data storage, verification and logic execution:
 
 
