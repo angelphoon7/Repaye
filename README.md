@@ -116,23 +116,7 @@ ________________________________________________________________________________
 2. Six-Month Complimentary Transaction Fee Period for Each Store:
 
    To encourage new stores to join and actively use the platform, a complimentary transaction fee waiver will be offered for the first six months following their registration. During this          introductory period, stores can fully utilize the platform’s services without incurring any transaction fees, allowing them to experience the benefits and increase their customer engagement     risk-free. After the completion of this six-month grace period, stores will be subject to a transaction fee applied to each completed sale. This fee will range from 5% to 10%, depending on      factors such as the store’s sales volume.
-_____________________________________________________________________________________________________
 
-**To start the code**
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 
 
