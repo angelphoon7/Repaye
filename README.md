@@ -105,6 +105,8 @@ ________________________________________________________________________________
    Solana is capable of handling 65,000+ transactions per second (TPS), which is essential for a system where multiple users may book restaurant slots simultaneously,complete payments instantly    and submit reviews in real time.
 
 
+________________________________________________________________________________________________________
+**Business Model 💰** 
 
 
 
