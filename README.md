@@ -80,10 +80,13 @@ ________________________________________________________________________________
 
     OpenAI’s language models are used to process and analyze user-generated reviews. The AI model evaluates review sentiment, detects redundant or repetitive content and measures comment            complexity. This ensures that only genuine and insightful reviews influence the restaurant rating, while generic or spam-like feedback is filtered appropriately.
 
-
+ 3. Wallet Connection (Solana Wallet)
+    The platform integrates a Solana-compatible wallet to handle user authentication and payment.
+    Users are required to connect their wallets to: Verify their identity, confirm payments before being allowed to review and ensure they can only submit one rating per day. This system            enforces fair usage, prevents review abuse, and enhances security.
 
 ________________________________________________________________________________________________________
 **Why on SOLANA?**
+
 
 
 
